@@ -179,3 +179,36 @@
 [15:09:39 23-07-2025] INFO: 🚀 Server is running on http://localhost:3002
 [15:09:42 23-07-2025] INFO: ::1 - - [23/Jul/2025:08:09:42 +0000] "POST /api/users/signup HTTP/1.1" 201 576 "-" "PostmanRuntime/7.44.1"
 [15:10:23 23-07-2025] INFO: ::1 - - [23/Jul/2025:08:10:23 +0000] "POST /api/users/login HTTP/1.1" 200 579 "-" "PostmanRuntime/7.44.1"
+[15:57:00 23-07-2025] INFO: ✅ Connected to MongoDB
+[15:57:01 23-07-2025] INFO: ✅ Connected to RabbitMQ
+[15:57:01 23-07-2025] INFO: ✅ [UserConsumer] Listening on queue: user_events
+[15:57:01 23-07-2025] INFO: 🚀 Server is running on http://localhost:3002
+[15:57:40 23-07-2025] INFO: ✅ Connected to MongoDB
+[15:57:41 23-07-2025] INFO: ✅ Connected to RabbitMQ
+[15:57:41 23-07-2025] INFO: ✅ [UserConsumer] Listening on queue: user_events
+[15:57:41 23-07-2025] INFO: 🚀 Server is running on http://localhost:3000
+[15:57:44 23-07-2025] INFO: ::1 - - [23/Jul/2025:08:57:44 +0000] "GET /api/auth/google HTTP/1.1" 500 1150 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+[15:59:04 23-07-2025] INFO: ✅ Connected to MongoDB
+[15:59:05 23-07-2025] INFO: ✅ Connected to RabbitMQ
+[15:59:06 23-07-2025] INFO: ✅ [UserConsumer] Listening on queue: user_events
+[15:59:06 23-07-2025] INFO: 🚀 Server is running on http://localhost:3000
+[15:59:15 23-07-2025] INFO: ::1 - - [23/Jul/2025:08:59:15 +0000] "GET /api/auth/google HTTP/1.1" 302 0 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+[15:59:20 23-07-2025] INFO: ::1 - - [23/Jul/2025:08:59:20 +0000] "GET /api/auth/google/callback?code=4%2F0AVMBsJhK35p5Mj5IVTtunySx2vlYJP0-rPuBtXKuhhjE1A4uXz5jbLGhjhGjJ6JVykUqHA&scope=email+profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+openid&authuser=0&prompt=consent HTTP/1.1" 200 17 "https://accounts.google.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+[16:20:18 23-07-2025] INFO: ✅ Connected to MongoDB
+[16:20:19 23-07-2025] INFO: ✅ Connected to RabbitMQ
+[16:20:19 23-07-2025] INFO: ✅ [UserConsumer] Listening on queue: user_events
+[16:20:19 23-07-2025] INFO: 🚀 Server is running on http://localhost:3000
+[16:20:45 23-07-2025] INFO: ::1 - - [23/Jul/2025:09:20:45 +0000] "GET /api/auth/facebook HTTP/1.1" 302 0 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+[16:20:56 23-07-2025] INFO: ::1 - - [23/Jul/2025:09:20:56 +0000] "GET /api/auth/facebook/callback?code=AQBTgjcAALPQrw_xHp1EQ3dSS_suNxmsPwT-4ZUW_P1am2zKE9lW9dnHF4Bv0dHhjw6YVV-Olq8ksiOaBL3J6p5AdV6_qOdsmyzIPapwL202MisZmrzN1nOuRSYFLIDJIzjrRrj7JT5Ikr2yL5W4AB48-V1MWs2a10VaaTx6PF5OqTc2G5NKaZIVrOede6XhI4kos88abGItDx-b7QT-6WO_yPwnZFi08sWHvzO2BpdtDS5RK11MdC5774qCp5TIC-LLErVMUuHNcxmaeK734MgHIHPb7NPG-vBszkM5l2WasUFEnaU4eDm2OCo4Sz8CRdH2duZ0-uZfz_295x0kTbA6VdcKx6jDZle756XYP2JhjzosmUkvct2kl6-etaLCUko HTTP/1.1" 200 17 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+[16:22:26 23-07-2025] INFO: ✅ Connected to MongoDB
+[16:22:26 23-07-2025] INFO: ✅ Connected to RabbitMQ
+[16:22:27 23-07-2025] INFO: ✅ [UserConsumer] Listening on queue: user_events
+[16:22:27 23-07-2025] INFO: 🚀 Server is running on http://localhost:3000
+[16:23:34 23-07-2025] INFO: ✅ Connected to MongoDB
+[16:23:35 23-07-2025] INFO: ✅ Connected to RabbitMQ
+[16:23:35 23-07-2025] INFO: ✅ [UserConsumer] Listening on queue: user_events
+[16:23:35 23-07-2025] INFO: 🚀 Server is running on http://localhost:3000
+[16:23:48 23-07-2025] INFO: ✅ Connected to MongoDB
+[16:23:48 23-07-2025] INFO: ✅ Connected to RabbitMQ
+[16:23:49 23-07-2025] INFO: ✅ [UserConsumer] Listening on queue: user_events
+[16:23:49 23-07-2025] INFO: 🚀 Server is running on http://localhost:3000

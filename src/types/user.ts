@@ -16,6 +16,7 @@ export interface IUser {
   email: string;
   password?: string;
   phone: string;
+  avatar: string;
   role: 'user' | 'admin';
 
   provider: AuthProvider;

@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import logger from './utils/logger';
 import router from './app/routes';
 import cookieParser from 'cookie-parser';
+import '../src/config/passport';
 
 const app: Application = express();
 
