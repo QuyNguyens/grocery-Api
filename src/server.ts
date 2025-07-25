@@ -19,7 +19,7 @@ async function startServer() {
 
     // Start HTTP server
     const server = app.listen(PORT, () => {
-      logger.info(`🚀 Server is running on http://localhost:${PORT}`);
+      logger.info(`🚀 Server is running on ht tp://localhost:${PORT}`);
     });
 
     setupWebSocket(server);

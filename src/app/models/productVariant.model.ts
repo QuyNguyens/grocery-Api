@@ -6,12 +6,7 @@ interface IProductVariantDocument extends IProductVariant, Document {}
 const ProductVariantSchema = new Schema<IProductVariantDocument>(
   {
     productId: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
-    options: [
-      {
-        name: { type: String, required: true },
-        value: { type: String, required: true },
-      },
-    ],
+    attributeValueIds: [{ type: Schema.Types.ObjectId, ref: 'AttributeValue', required: true }],
     price: { type: Number, required: true },
     currentPrice: { type: Number, required: true },
     discount: {

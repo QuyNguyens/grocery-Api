@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "D:\\NextJS\\grocery_Api\\src\\logs\\25-07-2025\\.0d581cf2306246bdd8f1667d2c768b29c6fe812f-audit.json",
+    "files": [
+        {
+            "date": 1753411548984,
+            "name": "D:\\NextJS\\grocery_Api\\src\\logs\\25-07-2025\\app.log.2025-07-25",
+            "hash": "b306a14df1bb6ec4e37b541730413986c05bdca99de51bf7679e5df80a6ef283"
+        }
+    ],
+    "hashType": "sha256"
+}

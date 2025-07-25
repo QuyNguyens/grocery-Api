@@ -1,14 +1,23 @@
-import { Ref } from "./common";
-import { IProduct } from "./product";
+import { Ref } from './common';
+import { IProduct } from './product';
+
+export interface IAttribute {
+  name: string; // e.g. "Color", "Size"
+}
+
+export interface IAttributeValue {
+  attributeId: Ref<IAttribute>;
+  value: string; // e.g. "Red", "XL"
+}
 
 export interface IProductVariant {
   productId: Ref<IProduct>;
-  options: { name: string; value: string }[];
-  price: number; // Giá gốc
-  currentPrice: number; // Giá hiện tại (có thể thấp hơn nếu đang sale)
+  attributeValueIds: string[];
+  price: number;
+  currentPrice: number;
   discount?: {
     type: 'percentage' | 'fixed';
-    value: number; // VD: 10 (10%), hoặc 50000 (50k)
+    value: number;
     endDate?: Date;
   };
   quantity: number;

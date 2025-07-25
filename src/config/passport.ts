@@ -4,6 +4,7 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { Strategy as FacebookStrategy } from 'passport-facebook';
 import userModel from '../app/models/user.model';
 import env from './env';
+import { IUser } from '../types/user';
 
 // Google Strategy
 passport.use(
@@ -13,14 +14,19 @@ passport.use(
       clientSecret: env.GOOGLE_CLIENT_SECRET!,
       callbackURL: '/api/auth/google/callback',
     },
-    async (_accessToken, _refreshToken, profile, done) => {
+    async (accessToken, refreshToken, profile, done) => {
       try {
         const existingUser = await userModel.findOne({
           providerId: profile.id,
           provider: 'google',
         });
 
-        if (existingUser) return done(null, existingUser);
+        if (existingUser)
+          return done(null, {
+            ...existingUser.toObject(),
+            accessToken,
+            refreshToken,
+          });
 
         const newUser = await userModel.create({
           name: profile.displayName,
@@ -30,7 +36,11 @@ passport.use(
           avatar: profile.photos?.[0]?.value,
         });
 
-        return done(null, newUser);
+        return done(null, {
+          ...newUser.toObject(),
+          accessToken,
+          refreshToken,
+        });
       } catch (err) {
         return done(err);
       }
@@ -47,7 +57,7 @@ passport.use(
       callbackURL: '/api/auth/facebook/callback',
       profileFields: ['id', 'displayName', 'emails', 'photos'],
     },
-    async (_accessToken, _refreshToken, profile, done) => {
+    async (accessToken, refreshToken, profile, done) => {
       try {
         const email = profile.emails?.[0]?.value || `${profile.id}@facebook.com`;
 
@@ -66,7 +76,11 @@ passport.use(
           });
         }
 
-        return done(null, user);
+        return done(null, {
+          ...user.toObject(),
+          accessToken,
+          refreshToken,
+        });
       } catch (err) {
         return done(err as any, false);
       }
