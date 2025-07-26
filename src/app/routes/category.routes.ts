@@ -5,6 +5,7 @@ import categoriesController from '../controllers/categories.controller';
 
 const router = express.Router();
 
+router.get('', categoriesController.get);
 router.post('/create', validateRequest(categorySchema), categoriesController.create);
 router.post('/create-all', categoriesController.createAll);
 

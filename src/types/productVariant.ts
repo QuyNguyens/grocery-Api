@@ -11,15 +11,15 @@ export interface IAttributeValue {
 }
 
 export interface IProductVariant {
-  productId: Ref<IProduct>;
-  attributeValueIds: string[];
-  price: number;
-  currentPrice: number;
-  discount?: {
-    type: 'percentage' | 'fixed';
-    value: number;
-    endDate?: Date;
-  };
-  quantity: number;
-  sku: string;
+    productId: Ref<IProduct>;
+    attributeValueIds: string[];
+    price: number;
+    currentPrice: number;
+    discount?: {
+      type: 'percentage' | 'fixed';
+      value: number;
+      endDate?: Date;
+    };
+    quantity: number;
+    sku: string;
 }

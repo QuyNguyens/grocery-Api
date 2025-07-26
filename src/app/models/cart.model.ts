@@ -10,6 +10,12 @@ const CartSchema = new Schema<ICartDocument>(
       {
         productVariantId: { type: Schema.Types.ObjectId, ref: 'ProductVariant' },
         quantity: Number,
+        attributesSnapshot: {
+          name: { type: String },
+          value: { type: String },
+        },
+        image: { type: String },
+        name: { type: String },
       },
     ],
   },

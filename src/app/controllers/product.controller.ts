@@ -16,18 +16,16 @@ class ProductController {
     }
   }
 
-  async getProductsByCategoryId(req: Request, res: Response) {
+  async getProductsByCategoryName(req: Request, res: Response) {
     try {
-      const { categoryId, page = 1, limit = 10 } = req.query;
+      const { name, page = 1, limit = 10 } = req.query;
 
-      if (!categoryId || typeof categoryId !== 'string' || !Types.ObjectId.isValid(categoryId)) {
-        return error(res, 400, 'Invalid categoryId');
+      if (name === '') {
+        return error(res, 400, 'Invalid category name');
       }
 
-      const objectId = new Types.ObjectId(categoryId);
-
-      const { result, totalProduct } = await productService.getProductsByCategoryId(
-        objectId,
+      const { result, totalProduct } = await productService.getProductsByCategoryName(
+        name?.toString() || '',
         Number(page),
         Number(limit),
       );

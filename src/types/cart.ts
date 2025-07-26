@@ -1,9 +1,16 @@
 import { Ref } from './common';
+import { IProductVariant } from './productVariant';
 import { IUser } from './user';
 
 export interface ICartItem {
-  productVariantId: string;
+  productVariantId: Ref<IProductVariant>;
   quantity: number;
+  attributesSnapshot?: {
+    name: string;
+    value: string;
+  };
+  image: string;
+  name: string;
 }
 
 export interface ICart {

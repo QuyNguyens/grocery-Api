@@ -5,6 +5,7 @@ import productVariantController from '../controllers/productVariant.controller';
 
 const router = express.Router();
 
+router.get('', productVariantController.getByProductId);
 router.post('/create', validateRequest(productVariantSchema), productVariantController.create);
 
 export default router;

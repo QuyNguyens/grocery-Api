@@ -7,8 +7,8 @@ class ProductService {
     return await productRepository.create(data);
   }
 
-  async getProductsByCategoryId(categoryId: Types.ObjectId, page: number, limit: number) {
-    return await productRepository.getProductsByCategoryId(categoryId, page, limit);
+  async getProductsByCategoryName(name: string, page: number, limit: number) {
+    return await productRepository.getProductsByCategoryName(name, page, limit);
   }
 
   async getSpecialProducts(page: number, limit: number) {
@@ -18,7 +18,7 @@ class ProductService {
   async getTopDealProducts(page: number, limit: number) {
     return await productRepository.getTopDealProducts(page, limit);
   }
-  
+
   async getBestSellingProducts(page: number, limit: number) {
     return await productRepository.getBestSellingProducts(page, limit);
   }

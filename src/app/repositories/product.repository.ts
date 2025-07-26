@@ -5,15 +5,24 @@ import productVariantModel from '../models/productVariant.model';
 import { ProductDTO } from '../../types/Dto/productDTO';
 import reviewModel from '../models/review.model';
 import orderDetailModel from '../models/orderDetail.model';
+import categoryModel from '../models/category.model';
 
 class ProductRepository {
   create(data: ProductInput) {
     return productModel.create(data);
   }
 
-  async getProductsByCategoryId(categoryId: Types.ObjectId, page: number, limit: number) {
+  async getProductsByCategoryName(name: string, page: number, limit: number) {
     const skip = (page - 1) * limit;
 
+    const category = await categoryModel
+      .findOne({
+        name: { $regex: `^${name}$`, $options: 'i' },
+      })
+      .select('_id');
+
+    const categoryId = category?._id;
+    if (!categoryId) return { result: [], totalProduct: 0 };
     const totalProduct = await productModel.find({ categoryId }).countDocuments();
     const products = await productModel.find({ categoryId }).skip(skip).limit(limit);
 
