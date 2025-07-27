@@ -1,7 +1,7 @@
 import { Types } from 'mongoose';
 import { CartInput } from '../validators/cart.validator';
 import cartModel from '../models/cart.model';
-import { ICart, ICartItem } from '../../types/cart';
+import { ICartItem } from '../../types/cart';
 import productVariantModel from '../models/productVariant.model';
 
 class CartRepository {
@@ -14,13 +14,12 @@ class CartRepository {
       attributesSnapshot: data.attributesSnapshot,
       image: data.image,
       name: data.name,
+      type: data.type,
     };
 
     if (cart) {
       const existingItem = cart.items.find(
-        item =>
-          item.productVariantId.toString() === data.productVariantId &&
-          JSON.stringify(item.attributesSnapshot) === JSON.stringify(data.attributesSnapshot),
+        item => item.productVariantId.toString() === data.productVariantId,
       );
 
       if (existingItem) {
@@ -49,7 +48,7 @@ class CartRepository {
 
     const cart = await cartModel.findOne({ userId });
 
-    if (!cart || !cart.items.length) return [];
+    if (!cart || !cart.items.length) return { result: [], totalCount: 0 };
 
     const pagedItems = cart.items.slice(skip, skip + limit);
 
@@ -70,11 +69,32 @@ class CartRepository {
           image: cartItem.image,
           attributesSnapshot: cartItem.attributesSnapshot,
           price: product.price,
+          type: cartItem.type,
         };
       }),
     );
+    const items = result.filter(item => item !== null);
+    return { result: items, totalCount: cart.items.length };
+  }
 
-    return result.filter(item => item !== null);
+  async updateCartItem(userId: Types.ObjectId, itemId: Types.ObjectId, quantity: number) {
+    const cart = await cartModel.findOne({ userId });
+
+    if (!cart) {
+      throw new Error('Cart not found');
+    }
+
+    const item = cart.items.find(item => (item.productVariantId as Types.ObjectId).equals(itemId));
+
+    if (!item) {
+      throw new Error('Cart item not found');
+    }
+
+    item.quantity = quantity;
+
+    await cart.save();
+
+    return { itemId, quantity };
   }
 }
 

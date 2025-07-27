@@ -6,6 +6,7 @@ import { ProductDTO } from '../../types/Dto/productDTO';
 import reviewModel from '../models/review.model';
 import orderDetailModel from '../models/orderDetail.model';
 import categoryModel from '../models/category.model';
+import commonRepository from './common.repository';
 
 class ProductRepository {
   create(data: ProductInput) {
@@ -30,24 +31,45 @@ class ProductRepository {
       productId: { $in: products.map(p => p._id) },
     });
 
-    const result: ProductDTO[] = products.map(product => {
-      const variant = productVariants.find(v =>
-        (v.productId as Types.ObjectId).equals(product._id as Types.ObjectId),
-      );
-      return {
-        ...product.toObject(),
-        discount: variant?.discount || null,
-      };
-    });
+    const result: ProductDTO[] = await Promise.all(
+      products.map(async product => {
+        const variant = productVariants.find(v =>
+          (v.productId as Types.ObjectId).equals(product._id as Types.ObjectId),
+        );
+
+        const { totalRating, reviewCount } = await commonRepository.getReviewTotal(
+          product._id as Types.ObjectId,
+        );
+
+        const productType = await commonRepository.getProductType(product._id as Types.ObjectId);
+
+        return {
+          ...product.toObject(),
+          _id: product._id as Types.ObjectId,
+          discount: variant?.discount || null,
+          attributeValueIds: variant?.attributeValueIds || null,
+          rating: totalRating,
+          totalRating: reviewCount,
+          categoryType: productType?.name,
+          categoryRefType: productType?.related,
+        };
+      }),
+    );
 
     return { result, totalProduct };
   }
 
   async getSpecialProducts(page: number, limit: number) {
     const skip = (page - 1) * limit;
-    const result: ProductDTO[] = await productVariantModel.aggregate([
+    const products: ProductDTO[] = await productVariantModel.aggregate([
       { $match: { 'discount.value': { $gt: 0 } } },
-      { $group: { _id: '$productId', discount: { $first: '$discount' } } },
+      {
+        $group: {
+          _id: '$productId',
+          discount: { $first: '$discount' },
+          attributeValueIds: { $first: '$attributeValueIds' },
+        },
+      },
       {
         $lookup: {
           from: 'products',
@@ -66,6 +88,7 @@ class ProductRepository {
           basePrice: '$product.basePrice',
           images: '$product.images',
           discount: '$discount',
+          attributeValueIds: '$attributeValueIds',
         },
       },
       {
@@ -76,23 +99,41 @@ class ProductRepository {
       },
     ]);
 
+    const enhancedProducts = await Promise.all(
+      products.map(async product => {
+        const [typeInfo, reviewInfo] = await Promise.all([
+          commonRepository.getProductType(product._id),
+          commonRepository.getReviewTotal(product._id),
+        ]);
+
+        return {
+          ...product,
+          categoryType: typeInfo?.name,
+          categoryRefType: typeInfo?.related,
+          rating: reviewInfo.totalRating,
+          reviewCount: reviewInfo.reviewCount,
+        };
+      }),
+    );
+
     const countResult = await productVariantModel.aggregate([
       { $match: { 'discount.value': { $gt: 0 } } },
       { $group: { _id: '$productId' } },
       { $count: 'total' },
     ]);
 
-    return { result, totalProduct: countResult[0]?.total || 0 };
+    return { result: enhancedProducts, totalProduct: countResult[0]?.total || 0 };
   }
 
   async getTopDealProducts(page: number, limit: number) {
     const skip = (page - 1) * limit;
 
-    const result: ProductDTO[] = await reviewModel.aggregate([
+    const products: ProductDTO[] = await reviewModel.aggregate([
       {
         $group: {
           _id: '$productId',
           avgRating: { $avg: '$rating' },
+          reviewCount: { $sum: 1 },
         },
       },
       { $sort: { avgRating: -1 } },
@@ -116,21 +157,38 @@ class ProductRepository {
           basePrice: '$product.basePrice',
           images: '$product.images',
           rating: '$avgRating',
+          totalRating: '$reviewCount',
         },
       },
     ]);
+
+    const enhancedProducts = await Promise.all(
+      products.map(async product => {
+        const typeInfo = await commonRepository.getProductType(product._id);
+        const attributeValueIds = await commonRepository.getAttributeValueIdsProductVariant(
+          product._id,
+        );
+
+        return {
+          ...product,
+          categoryType: typeInfo?.name,
+          categoryRefType: typeInfo?.related,
+          attributeValueIds: attributeValueIds,
+        };
+      }),
+    );
 
     const countResult = await reviewModel.aggregate([
       { $group: { _id: '$productId' } },
       { $count: 'total' },
     ]);
 
-    return { result, totalProduct: countResult[0]?.total || 0 };
+    return { result: enhancedProducts, totalProduct: countResult[0]?.total || 0 };
   }
 
   async getBestSellingProducts(page: number, limit: number) {
     const skip = (page - 1) * limit;
-    const result = await orderDetailModel.aggregate([
+    const products: ProductDTO[] = await orderDetailModel.aggregate([
       {
         $group: {
           _id: '$productId',
@@ -160,17 +218,34 @@ class ProductRepository {
           categoryId: '$product.categoryId',
           basePrice: '$product.basePrice',
           images: '$product.images',
-          rating: '$avgRating',
         },
       },
     ]);
+
+    const enhancedProducts = await Promise.all(
+      products.map(async product => {
+        const [typeInfo, reviewInfo, attributeValueIds] = await Promise.all([
+          commonRepository.getProductType(product._id),
+          commonRepository.getReviewTotal(product._id),
+          commonRepository.getAttributeValueIdsProductVariant(product._id),
+        ]);
+
+        return {
+          ...product,
+          categoryType: typeInfo?.name,
+          categoryRefType: typeInfo?.related,
+          attributeValueIds: attributeValueIds,
+          totalRating: reviewInfo?.reviewCount,
+        };
+      }),
+    );
 
     const countResult = await orderDetailModel.aggregate([
       { $group: { _id: '$productId' } },
       { $count: 'total' },
     ]);
 
-    return { result, totalProduct: countResult[0]?.total || 0 };
+    return { result: enhancedProducts, totalProduct: countResult[0]?.total || 0 };
   }
 }
 

@@ -22,6 +22,32 @@ class CartController {
     }
   }
 
+  async updateCartItem(req: Request, res: Response) {
+    try {
+      const { userId, itemId, quantity } = req.query;
+
+      if (
+        !userId ||
+        typeof userId !== 'string' ||
+        !isValidObjectId(userId) ||
+        !itemId ||
+        typeof itemId !== 'string' ||
+        !isValidObjectId(itemId)
+      ) {
+        return error(res, 400, 'invalid Id');
+      }
+
+      const objectUserId = new Types.ObjectId(userId);
+      const objectItemId = new Types.ObjectId(itemId);
+
+      await cartService.updateCartItem(objectUserId, objectItemId, Number(quantity));
+
+      success(res, 200, 'Cập nhật số lượng thành công', { itemId, quantity });
+    } catch (err) {
+      error(res, 500, 'Lỗi khi cập nhật số lượng');
+    }
+  }
+
   async create(req: Request, res: Response) {
     try {
       const { userId } = req.query;
@@ -47,9 +73,14 @@ class CartController {
       }
       const objectId = new Types.ObjectId(userId);
 
-      const result = await cartService.get(objectId, Number(page), Number(limit));
+      const { result, totalCount } = await cartService.get(objectId, Number(page), Number(limit));
 
-      success(res, 200, 'Lấy thành công giỏ hàng', result);
+      success(res, 200, 'Lấy thành công giỏ hàng', result, {
+        currentPage: page,
+        limit: limit,
+        totalItems: totalCount,
+        totalPages: Math.ceil(totalCount / Number(limit)),
+      });
     } catch (err) {
       error(res, 500, 'Lấy giỏ hàng thất bại');
     }

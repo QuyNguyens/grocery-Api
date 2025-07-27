@@ -11,6 +11,7 @@ export const cartSchema = z.object({
     .optional(),
   image: z.url(),
   name: z.string(),
+  type: z.string(),
 });
 
 export type CartInput = z.infer<typeof cartSchema>;

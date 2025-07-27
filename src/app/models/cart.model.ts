@@ -16,6 +16,7 @@ const CartSchema = new Schema<ICartDocument>(
         },
         image: { type: String },
         name: { type: String },
+        type: { type: String },
       },
     ],
   },

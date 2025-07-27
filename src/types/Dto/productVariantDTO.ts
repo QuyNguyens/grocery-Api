@@ -12,6 +12,8 @@ export interface ProductVariantDTO extends IProductVariant {
   name?: string;
   description?: string;
   type?: string;
+  categoryType?: string;
+  categoryRefType?: string[];
   attribute?: string[];
   images?: string[];
   rating?: {

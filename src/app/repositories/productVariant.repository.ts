@@ -5,6 +5,7 @@ import { ProductVariantInput } from '../validators/productVariant.validator';
 import { attributeModel, attributeValueModel } from '../models/attributeValue.model';
 import { ProductVariantDTO, UserRating } from '../../types/Dto/productVariantDTO';
 import reviewModel from '../models/review.model';
+import commonRepository from './common.repository';
 
 class ProductVariantRepository {
   async getByProductId(productId: Types.ObjectId) {
@@ -44,29 +45,23 @@ class ProductVariantRepository {
         _id: { $in: productVariant?.attributeValueIds },
       })
       .populate('attributeId');
+    let attributeName;
+    if (attributeValues.length > 0) {
+      attributeName = await attributeModel
+        .findOne({ _id: attributeValues[0].attributeId })
+        .select('name');
+    }
 
-    const attributeName = await attributeModel
-      .findOne({ _id: attributeValues[0].attributeId })
-      .select('name');
+    const { totalRating, reviewCount } = await commonRepository.getReviewTotal(productId);
 
-    const rating = await reviewModel.aggregate([
-      { $match: { productId: productId } },
-      {
-        $group: {
-          _id: '$productId',
-          totalRating: { $sum: '$rating' },
-          reviewCount: { $sum: 1 },
-        },
-      },
-    ]);
-
-    const totalRating = rating[0]?.totalRating ?? 0;
-    const reviewCount = rating[0]?.reviewCount ?? 0;
-    productVariant.type = attributeName?.name;
+    const typeInfo = await commonRepository.getProductType(productId);
+    productVariant.type = attributeName?.name || '';
+    productVariant.categoryType = typeInfo?.name;
+    productVariant.categoryRefType = typeInfo?.related;
     productVariant.attribute = attributeValues.map(item => item.value);
     productVariant.rating = {
       value: totalRating / reviewCount,
-      total: reviewCount, 
+      total: reviewCount,
     };
 
     const userRating: UserRating[] = await reviewModel.aggregate([

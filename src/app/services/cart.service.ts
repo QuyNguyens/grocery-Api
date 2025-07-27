@@ -7,6 +7,10 @@ class CartService {
     return await cartRepository.addCartItem(cartItem, userId);
   }
 
+  async updateCartItem(userId: Types.ObjectId, itemId: Types.ObjectId, quantity: number){
+    return await cartRepository.updateCartItem(userId, itemId, quantity);
+  }
+  
   async create(userId: Types.ObjectId) {
     return await cartRepository.create(userId);
   }

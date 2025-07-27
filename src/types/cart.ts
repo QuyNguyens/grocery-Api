@@ -11,6 +11,7 @@ export interface ICartItem {
   };
   image: string;
   name: string;
+  type: string;
 }
 
 export interface ICart {
