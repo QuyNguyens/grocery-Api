@@ -9,5 +9,6 @@ router.post('/create', cartController.create);
 router.put('/update', cartController.updateCartItem);
 router.get('/items', cartController.get);
 router.post('/add-cart-item', validateRequest(cartSchema), cartController.addCartItem);
+router.delete('/delete', cartController.deleteCartItem);
 
 export default router;

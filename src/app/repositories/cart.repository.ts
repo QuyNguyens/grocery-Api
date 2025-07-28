@@ -17,26 +17,52 @@ class CartRepository {
       type: data.type,
     };
 
+    let resultItem: ICartItem;
+
     if (cart) {
       const existingItem = cart.items.find(
-        item => item.productVariantId.toString() === data.productVariantId,
+        item =>
+          item.productVariantId.toString() === data.productVariantId &&
+          item.attributesSnapshot?.value === data.attributesSnapshot?.value,
       );
 
       if (existingItem) {
         existingItem.quantity += data.quantity;
+        await cart.save();
+        resultItem = existingItem;
       } else {
         cart.items.push(cartItem);
+        await cart.save();
+        resultItem = cart.items[cart.items.length - 1];
       }
-
-      await cart.save();
     } else {
       cart = await cartModel.create({
         userId,
         items: [cartItem],
       });
+      resultItem = cart.items[0];
     }
 
-    return cart;
+    const productVariant = await productVariantModel
+      .findOne({ _id: resultItem.productVariantId })
+      .populate('productId')
+      .lean();
+
+    const product = productVariant?.productId as any;
+
+    const result = {
+      _id: resultItem._id,
+      productVariantId: resultItem.productVariantId,
+      quantity: resultItem.quantity,
+      attributesSnapshot: resultItem.attributesSnapshot,
+      image: resultItem.image,
+      name: resultItem.name,
+      type: resultItem.type,
+      price: product?.basePrice,
+      discount: productVariant?.discount,
+    };
+
+    return result;
   }
 
   create(userId: Types.ObjectId) {
@@ -62,7 +88,7 @@ class CartRepository {
         if (!product) return null;
 
         return {
-          _id: product._id,
+          _id: cartItem._id,
           name: cartItem.name,
           discount: product.discount,
           quantity: cartItem.quantity,
@@ -70,6 +96,7 @@ class CartRepository {
           attributesSnapshot: cartItem.attributesSnapshot,
           price: product.price,
           type: cartItem.type,
+          productVariantId: cartItem.productVariantId,
         };
       }),
     );
@@ -84,7 +111,7 @@ class CartRepository {
       throw new Error('Cart not found');
     }
 
-    const item = cart.items.find(item => (item.productVariantId as Types.ObjectId).equals(itemId));
+    const item = cart.items.find(item => (item._id as Types.ObjectId).equals(itemId));
 
     if (!item) {
       throw new Error('Cart item not found');
@@ -95,6 +122,17 @@ class CartRepository {
     await cart.save();
 
     return { itemId, quantity };
+  }
+
+  async deleteCartItem(userId: Types.ObjectId, itemId: Types.ObjectId) {
+    const cart = await cartModel.findOne({ userId });
+    if (!cart) {
+      throw new Error('Cart not found');
+    }
+
+    cart.items = cart.items.filter(item => !item._id?.equals(itemId));
+
+    await cart.save();
   }
 }
 

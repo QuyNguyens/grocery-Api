@@ -3,18 +3,19 @@ import { CartInput } from '../validators/cart.validator';
 import cartService from '../services/cart.service';
 import { error, success } from '../../utils/response';
 import { isValidObjectId, Types } from 'mongoose';
+import { ObjectValidator } from '../helpers/objectIdValidator';
+import { ObjectIdConvert } from '../helpers/convert/ObjectIdConvert';
 
 class CartController {
   async addCartItem(req: Request, res: Response) {
     try {
       const { userId } = req.query;
       const data: CartInput = req.body;
-      if (!userId || typeof userId !== 'string' || !isValidObjectId(userId)) {
+      if (!ObjectValidator(userId)) {
         return error(res, 400, 'Invalid userId');
       }
-      const objectId = new Types.ObjectId(userId);
 
-      const result = await cartService.addCartItem(data, objectId);
+      const result = await cartService.addCartItem(data, ObjectIdConvert(userId?.toString() || ''));
 
       success(res, 200, 'Thêm sản phẩm vào giỏ hàng thành công', result);
     } catch (err) {
@@ -26,21 +27,15 @@ class CartController {
     try {
       const { userId, itemId, quantity } = req.query;
 
-      if (
-        !userId ||
-        typeof userId !== 'string' ||
-        !isValidObjectId(userId) ||
-        !itemId ||
-        typeof itemId !== 'string' ||
-        !isValidObjectId(itemId)
-      ) {
+      if (!ObjectValidator(userId) || !ObjectValidator(itemId)) {
         return error(res, 400, 'invalid Id');
       }
 
-      const objectUserId = new Types.ObjectId(userId);
-      const objectItemId = new Types.ObjectId(itemId);
-
-      await cartService.updateCartItem(objectUserId, objectItemId, Number(quantity));
+      await cartService.updateCartItem(
+        ObjectIdConvert(userId?.toString() || ''),
+        ObjectIdConvert(itemId?.toString() || ''),
+        Number(quantity),
+      );
 
       success(res, 200, 'Cập nhật số lượng thành công', { itemId, quantity });
     } catch (err) {
@@ -68,12 +63,15 @@ class CartController {
     try {
       const { userId, page = 1, limit = 10 } = req.query;
 
-      if (!userId || typeof userId !== 'string' || !isValidObjectId(userId)) {
+      if (!ObjectValidator(userId)) {
         return error(res, 400, 'invalid userId');
       }
-      const objectId = new Types.ObjectId(userId);
 
-      const { result, totalCount } = await cartService.get(objectId, Number(page), Number(limit));
+      const { result, totalCount } = await cartService.get(
+        ObjectIdConvert(userId?.toString() || ''),
+        Number(page),
+        Number(limit),
+      );
 
       success(res, 200, 'Lấy thành công giỏ hàng', result, {
         currentPage: page,
@@ -83,6 +81,25 @@ class CartController {
       });
     } catch (err) {
       error(res, 500, 'Lấy giỏ hàng thất bại');
+    }
+  }
+
+  async deleteCartItem(req: Request, res: Response) {
+    try {
+      const { userId, itemId } = req.query;
+
+      if (!ObjectValidator(userId) || !ObjectValidator(itemId)) {
+        return error(res, 400, 'invalid Id');
+      }
+
+      await cartService.deleteCartItem(
+        ObjectIdConvert(userId?.toString() || ''),
+        ObjectIdConvert(itemId?.toString() || ''),
+      );
+
+      success(res, 204, 'Đã xóa item ra khỏi giỏ hàng thành công');
+    } catch (err) {
+      error(res, 500, 'Xóa item thất bại!!!');
     }
   }
 }

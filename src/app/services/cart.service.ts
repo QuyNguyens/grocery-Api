@@ -7,16 +7,20 @@ class CartService {
     return await cartRepository.addCartItem(cartItem, userId);
   }
 
-  async updateCartItem(userId: Types.ObjectId, itemId: Types.ObjectId, quantity: number){
+  async updateCartItem(userId: Types.ObjectId, itemId: Types.ObjectId, quantity: number) {
     return await cartRepository.updateCartItem(userId, itemId, quantity);
   }
-  
+
   async create(userId: Types.ObjectId) {
     return await cartRepository.create(userId);
   }
 
   async get(userId: Types.ObjectId, page: number, limit: number) {
     return await cartRepository.get(userId, page, limit);
+  }
+
+  async deleteCartItem(userId: Types.ObjectId, itemId: Types.ObjectId) {
+    return await cartRepository.deleteCartItem(userId, itemId);
   }
 }
 

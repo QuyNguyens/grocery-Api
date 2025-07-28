@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import { Ref } from './common';
 import { IProductVariant } from './productVariant';
 import { IUser } from './user';
@@ -12,6 +13,7 @@ export interface ICartItem {
   image: string;
   name: string;
   type: string;
+  _id?: Types.ObjectId;
 }
 
 export interface ICart {

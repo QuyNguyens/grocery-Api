@@ -3,24 +3,31 @@ import { ICart } from '../../types/cart';
 
 interface ICartDocument extends ICart, Document {}
 
+const CartItemSchema = new Schema(
+  {
+    productVariantId: { type: Schema.Types.ObjectId, ref: 'ProductVariant' },
+    quantity: Number,
+    attributesSnapshot: {
+      name: { type: String },
+      value: { type: String },
+    },
+    image: { type: String },
+    name: { type: String },
+    type: { type: String },
+  },
+  {
+    _id: true,
+  },
+);
+
 const CartSchema = new Schema<ICartDocument>(
   {
     userId: { type: Schema.Types.ObjectId, ref: 'User' },
-    items: [
-      {
-        productVariantId: { type: Schema.Types.ObjectId, ref: 'ProductVariant' },
-        quantity: Number,
-        attributesSnapshot: {
-          name: { type: String },
-          value: { type: String },
-        },
-        image: { type: String },
-        name: { type: String },
-        type: { type: String },
-      },
-    ],
+    items: [CartItemSchema],
   },
-  { timestamps: { updatedAt: true, createdAt: false } },
+  {
+    timestamps: { updatedAt: true, createdAt: false },
+  },
 );
 
 export default mongoose.model<ICartDocument>('Cart', CartSchema);
