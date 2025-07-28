@@ -15,7 +15,24 @@ class ProductController {
       error(res, 500, 'Lỗi khi tạo sản phẩm');
     }
   }
+  async getProducts(req: Request, res: Response) {
+    try {
+      const { page = 1, limit = 10 } = req.query;
 
+      const { result, totalProduct } = await productService.getProducts(
+        Number(page),
+        Number(limit),
+      );
+
+      success(res, 200, 'Lấy sản phẩm thành công', result, {
+        currentPage: page,
+        limit: limit,
+        totalItems: totalProduct,
+        totalPages: Math.ceil(totalProduct / Number(limit)),
+      });
+    } catch (error) {}
+  }
+  
   async getProductsByCategoryName(req: Request, res: Response) {
     try {
       const { name, page = 1, limit = 10 } = req.query;

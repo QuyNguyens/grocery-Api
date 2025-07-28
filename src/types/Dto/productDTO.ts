@@ -11,4 +11,5 @@ export interface ProductDTO extends IProduct {
   type?: string;
   categoryType?: string;
   categoryRefType?: string[];
+  inStock?: number;
 }

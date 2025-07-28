@@ -52,6 +52,7 @@ class ProductRepository {
           totalRating: reviewCount,
           categoryType: productType?.name,
           categoryRefType: productType?.related,
+          inStock: variant?.quantity,
         };
       }),
     );
@@ -68,6 +69,7 @@ class ProductRepository {
           _id: '$productId',
           discount: { $first: '$discount' },
           attributeValueIds: { $first: '$attributeValueIds' },
+          quantity: { $first: '$quantity' },
         },
       },
       {
@@ -89,6 +91,7 @@ class ProductRepository {
           images: '$product.images',
           discount: '$discount',
           attributeValueIds: '$attributeValueIds',
+          inStock: '$quantity',
         },
       },
       {
@@ -173,7 +176,7 @@ class ProductRepository {
           ...product,
           categoryType: typeInfo?.name,
           categoryRefType: typeInfo?.related,
-          attributeValueIds: attributeValueIds,
+          attributeValueIds: attributeValueIds, 
         };
       }),
     );
@@ -246,6 +249,43 @@ class ProductRepository {
     ]);
 
     return { result: enhancedProducts, totalProduct: countResult[0]?.total || 0 };
+  }
+
+  async getProducts(page: number, limit: number) {
+    const skip = (page - 1) * limit;
+    const products = await productModel.find().skip(skip).limit(limit);
+    const totalProduct = await productModel.countDocuments();
+    const productVariants = await productVariantModel.find({
+      productId: { $in: products.map(p => p._id) },
+    });
+
+    const result: ProductDTO[] = await Promise.all(
+      products.map(async product => {
+        const variant = productVariants.find(v =>
+          (v.productId as Types.ObjectId).equals(product._id as Types.ObjectId),
+        );
+
+        const { totalRating, reviewCount } = await commonRepository.getReviewTotal(
+          product._id as Types.ObjectId,
+        );
+
+        const productType = await commonRepository.getProductType(product._id as Types.ObjectId);
+
+        return {
+          ...product.toObject(),
+          _id: product._id as Types.ObjectId,
+          discount: variant?.discount || null,
+          attributeValueIds: variant?.attributeValueIds || null,
+          rating: totalRating,
+          totalRating: reviewCount,
+          categoryType: productType?.name,
+          categoryRefType: productType?.related,
+          inStock: variant?.quantity,
+        };
+      }),
+    );
+
+    return { result, totalProduct };
   }
 }
 

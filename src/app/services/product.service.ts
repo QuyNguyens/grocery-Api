@@ -22,6 +22,10 @@ class ProductService {
   async getBestSellingProducts(page: number, limit: number) {
     return await productRepository.getBestSellingProducts(page, limit);
   }
+
+  async getProducts(page: number, limit: number) {
+    return await productRepository.getProducts(page, limit);
+  }
 }
 
 export default new ProductService();

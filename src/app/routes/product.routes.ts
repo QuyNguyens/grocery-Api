@@ -5,6 +5,7 @@ import productController from '../controllers/product.controller';
 
 const router = express.Router();
 
+router.get('/our-store', productController.getProducts);
 router.get('/categories', productController.getProductsByCategoryName);
 router.get('/special', productController.getSpecialProducts);
 router.get('/top-deal', productController.getTopDealProducts);
