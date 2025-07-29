@@ -105,6 +105,16 @@ class ProductRepository {
         },
       },
       { $unwind: '$product' },
+
+      // NEW: Lookup attribute value docs
+      {
+        $lookup: {
+          from: 'attributevalues',
+          localField: 'attributeValueIds',
+          foreignField: '_id',
+          as: 'attributeValues',
+        },
+      },
       {
         $project: {
           _id: '$product._id',
@@ -114,16 +124,19 @@ class ProductRepository {
           basePrice: '$product.basePrice',
           images: '$product.images',
           discount: '$discount',
-          attributeValueIds: '$attributeValueIds',
+          // convert to just array of value strings
+          attributeValueIds: {
+            $map: {
+              input: '$attributeValues',
+              as: 'attr',
+              in: '$$attr.value',
+            },
+          },
           inStock: '$quantity',
         },
       },
-      {
-        $skip: skip,
-      },
-      {
-        $limit: limit,
-      },
+      { $skip: skip },
+      { $limit: limit },
     ]);
 
     const enhancedProducts = await Promise.all(
@@ -224,7 +237,7 @@ class ProductRepository {
         },
       },
       { $sort: { totalSold: -1 } },
-      {
+      { 
         $skip: skip,
       },
       { $limit: limit },
@@ -299,7 +312,16 @@ class ProductRepository {
           ...product.toObject(),
           _id: product._id as Types.ObjectId,
           discount: variant?.discount || null,
-          attributeValueIds: variant?.attributeValueIds || null,
+          attributeValueIds: variant
+            ? (
+                await Promise.all(
+                  variant.attributeValueIds.map(async id => {
+                    const attrValue = await attributeValueModel.findById(id).select('value');
+                    return attrValue?.value;
+                  }),
+                ) 
+              ).filter((v): v is string => typeof v === 'string')
+            : null,
           rating: totalRating,
           totalRating: reviewCount,
           categoryType: productType?.name,
