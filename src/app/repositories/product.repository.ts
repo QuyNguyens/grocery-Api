@@ -7,6 +7,7 @@ import reviewModel from '../models/review.model';
 import orderDetailModel from '../models/orderDetail.model';
 import categoryModel from '../models/category.model';
 import commonRepository from './common.repository';
+import { attributeValueModel } from '../models/attributeValue.model';
 
 class ProductRepository {
   create(data: ProductInput) {
@@ -20,12 +21,28 @@ class ProductRepository {
       .findOne({
         name: { $regex: `^${name}$`, $options: 'i' },
       })
-      .select('_id');
+      .select('_id parentId');
 
-    const categoryId = category?._id;
-    if (!categoryId) return { result: [], totalProduct: 0 };
-    const totalProduct = await productModel.find({ categoryId }).countDocuments();
-    const products = await productModel.find({ categoryId }).skip(skip).limit(limit);
+    if (!category) return { result: [], totalProduct: 0 };
+
+    let products;
+    let totalProduct = 0;
+
+    if (!category.parentId) {
+      const children = await categoryModel.find({ parentId: category._id }).select('_id');
+      const childrenIds = children.map(c => c._id);
+
+      const categoryIds = childrenIds.length > 0 ? childrenIds : [category._id];
+
+      totalProduct = await productModel.countDocuments({ categoryId: { $in: categoryIds } });
+      products = await productModel
+        .find({ categoryId: { $in: categoryIds } })
+        .skip(skip)
+        .limit(limit);
+    } else {
+      totalProduct = await productModel.countDocuments({ categoryId: category._id });
+      products = await productModel.find({ categoryId: category._id }).skip(skip).limit(limit);
+    }
 
     const productVariants = await productVariantModel.find({
       productId: { $in: products.map(p => p._id) },
@@ -47,7 +64,14 @@ class ProductRepository {
           ...product.toObject(),
           _id: product._id as Types.ObjectId,
           discount: variant?.discount || null,
-          attributeValueIds: variant?.attributeValueIds || null,
+          attributeValueIds: variant
+            ? await Promise.all(
+                variant.attributeValueIds.map(async id => {
+                  const attrValue = await attributeValueModel.findById(id).select('value');
+                  return attrValue?.value;
+                }),
+              )
+            : null,
           rating: totalRating,
           totalRating: reviewCount,
           categoryType: productType?.name,
@@ -176,7 +200,7 @@ class ProductRepository {
           ...product,
           categoryType: typeInfo?.name,
           categoryRefType: typeInfo?.related,
-          attributeValueIds: attributeValueIds, 
+          attributeValueIds: attributeValueIds,
         };
       }),
     );

@@ -13,3 +13,16 @@ export interface ProductDTO extends IProduct {
   categoryRefType?: string[];
   inStock?: number;
 }
+
+interface Category {
+  _id: Types.ObjectId;
+  name: string;
+  amount: number;
+}
+export interface ProductFilterDTO {
+  inStock: number;
+  outStock: number;
+  category: Category[];
+  weight?: string[];
+  color?: string[];
+}
