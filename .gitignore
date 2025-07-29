@@ -2,7 +2,7 @@
 node_modules/
 
 # Build output
-dist/
+# dist/
 build/
 
 # Environment variables
@@ -28,3 +28,8 @@ Thumbs.db
 
 # Log
 /src/logs/
+*.log
+# Test
+__tests__
+*.test.ts
+*.spec.ts

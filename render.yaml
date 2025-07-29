@@ -2,9 +2,11 @@ services:
   - type: web
     name: my-node-service
     runtime: node
-    buildCommand: npm install && npm run build
-    startCommand: npm start
+    buildCommand: echo "skip build"
+    startCommand: node dist/server.js
     envVars:
       - key: NODE_ENV
         value: production
+      - key: NODE_OPTIONS
+        value: "--max-old-space-size=1024"
     autoDeploy: true
