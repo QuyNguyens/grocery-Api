@@ -287,6 +287,7 @@ class ProductRepository {
           categoryRefType: typeInfo?.related,
           attributeValueIds: attributeValueIds,
           totalRating: reviewInfo?.reviewCount,
+          rating: reviewInfo?.totalRating / reviewInfo?.reviewCount,
         };
       }),
     );
