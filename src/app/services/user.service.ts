@@ -4,6 +4,7 @@ import { SignupInput, LoginInput } from '../validators/auth.validator';
 import { Types } from 'mongoose';
 import { JwtPayload } from '../../types/jwt';
 import userRepository from '../repositories/user.repository';
+import { Address } from '../../types/user';
 
 class UserService {
   signup = async (data: SignupInput) => {
@@ -44,6 +45,10 @@ class UserService {
       throw new Error('Refresh token không hợp lệ hoặc đã hết hạn');
     }
   };
+
+  async pushAddress(userId: Types.ObjectId, address: Address) {
+    return await userRepository.pushAddress(userId, address);
+  }
 }
 
 export default new UserService();

@@ -3,6 +3,8 @@ import { SignupInput, LoginInput } from '../validators/auth.validator';
 import env from '../../config/env';
 import { success, error } from '../../utils/response';
 import userService from '../services/user.service';
+import { Types } from 'mongoose';
+import { Address } from '../../types/user';
 
 class UserController {
   signup = async (req: Request, res: Response) => {
@@ -49,5 +51,13 @@ class UserController {
       error(res, 403, (err as Error).message);
     }
   };
+
+  async pushAddress(userId: Types.ObjectId, address: Address) {
+    try {
+      return await userService.pushAddress(userId, address);
+    } catch (error) {
+      return false;
+    }
+  }
 }
 export default new UserController();

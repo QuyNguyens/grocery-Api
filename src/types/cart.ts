@@ -14,6 +14,7 @@ export interface ICartItem {
   name: string;
   type: string;
   _id?: Types.ObjectId;
+  price?: number;
 }
 
 export interface ICart {

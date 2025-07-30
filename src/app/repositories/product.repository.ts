@@ -228,19 +228,29 @@ class ProductRepository {
 
   async getBestSellingProducts(page: number, limit: number) {
     const skip = (page - 1) * limit;
-    const products: ProductDTO[] = await orderDetailModel.aggregate([
+
+    const products = await orderDetailModel.aggregate([
+      {
+        $lookup: {
+          from: 'productvariants',
+          localField: 'productVariantId',
+          foreignField: '_id',
+          as: 'variant',
+        },
+      },
+      { $unwind: '$variant' },
       {
         $group: {
-          _id: '$productId',
+          _id: '$variant.productId',
           totalSold: { $sum: '$quantity' },
           totalRevenue: { $sum: { $multiply: ['$quantity', '$price'] } },
         },
       },
+
       { $sort: { totalSold: -1 } },
-      { 
-        $skip: skip,
-      },
+      { $skip: skip },
       { $limit: limit },
+
       {
         $lookup: {
           from: 'products',
@@ -250,6 +260,7 @@ class ProductRepository {
         },
       },
       { $unwind: '$product' },
+
       {
         $project: {
           _id: '$product._id',
@@ -281,11 +292,23 @@ class ProductRepository {
     );
 
     const countResult = await orderDetailModel.aggregate([
-      { $group: { _id: '$productId' } },
+      {
+        $lookup: {
+          from: 'productvariants',
+          localField: 'productVariantId',
+          foreignField: '_id',
+          as: 'variant',
+        },
+      },
+      { $unwind: '$variant' },
+      { $group: { _id: '$variant.productId' } },
       { $count: 'total' },
     ]);
 
-    return { result: enhancedProducts, totalProduct: countResult[0]?.total || 0 };
+    return {
+      result: enhancedProducts,
+      totalProduct: countResult[0]?.total || 0,
+    };
   }
 
   async getProducts(page: number, limit: number) {
@@ -319,7 +342,7 @@ class ProductRepository {
                     const attrValue = await attributeValueModel.findById(id).select('value');
                     return attrValue?.value;
                   }),
-                ) 
+                )
               ).filter((v): v is string => typeof v === 'string')
             : null,
           rating: totalRating,

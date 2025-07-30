@@ -1,13 +1,8 @@
 import { Router } from 'express';
+import orderController from '../controllers/order.controller';
 
 const router = Router();
 
-router.get('/', (_req, res) => {
-  res.send('Danh sách order');
-});
-
-router.post('/', (_req, res) => {
-  res.send('Tạo đơn hàng');
-});
+router.get('/order-detail', orderController.getOrderDetail);
 
 export default router;
