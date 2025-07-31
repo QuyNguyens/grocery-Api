@@ -13,6 +13,7 @@ const productAttribute_routes_1 = __importDefault(require("./productAttribute.ro
 const productVariant_routes_1 = __importDefault(require("./productVariant.routes"));
 const review_routes_1 = __importDefault(require("./review.routes"));
 const cart_routes_1 = __importDefault(require("./cart.routes"));
+const vnpay_routes_1 = __importDefault(require("./vnpay.routes"));
 const router = (0, express_1.Router)();
 router.use('/users', user_routes_1.default);
 router.use('/auth', auth_routes_1.default);
@@ -23,4 +24,5 @@ router.use('/product-attribute', productAttribute_routes_1.default);
 router.use('/product-variant', productVariant_routes_1.default);
 router.use('/review', review_routes_1.default);
 router.use('/cart', cart_routes_1.default);
+router.use('/vnpay', vnpay_routes_1.default);
 exports.default = router;

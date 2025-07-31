@@ -13,5 +13,12 @@ class UserRepository {
     findUserByEmail(email) {
         return user_model_1.default.findOne({ email });
     }
+    async pushAddress(userId, address) {
+        const user = await user_model_1.default.findById(userId);
+        if (!user)
+            return;
+        user?.addresses?.push(address);
+        await user.save();
+    }
 }
 exports.default = new UserRepository();

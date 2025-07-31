@@ -54,5 +54,13 @@ class UserController {
             }
         };
     }
+    async pushAddress(userId, address) {
+        try {
+            return await user_service_1.default.pushAddress(userId, address);
+        }
+        catch (error) {
+            return false;
+        }
+    }
 }
 exports.default = new UserController();

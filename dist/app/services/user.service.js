@@ -43,5 +43,8 @@ class UserService {
             }
         };
     }
+    async pushAddress(userId, address) {
+        return await user_repository_1.default.pushAddress(userId, address);
+    }
 }
 exports.default = new UserService();

@@ -36,9 +36,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
 const OrderDetailSchema = new mongoose_1.Schema({
     orderId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Order' },
-    productId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Product' },
     productVariantId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'ProductVariant' },
     quantity: Number,
     price: Number,
+    image: String,
+    name: String,
+    type: String,
 });
 exports.default = mongoose_1.default.model('OrderDetail', OrderDetailSchema);

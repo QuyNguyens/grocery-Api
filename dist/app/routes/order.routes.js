@@ -1,11 +1,11 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
+const order_controller_1 = __importDefault(require("../controllers/order.controller"));
 const router = (0, express_1.Router)();
-router.get('/', (_req, res) => {
-    res.send('Danh sách order');
-});
-router.post('/', (_req, res) => {
-    res.send('Tạo đơn hàng');
-});
+router.get('/order-detail', order_controller_1.default.getOrderDetail);
+router.get('', order_controller_1.default.getOrders);
 exports.default = router;
