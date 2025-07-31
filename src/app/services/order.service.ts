@@ -19,6 +19,10 @@ class OrderService {
   async getOrderDetail(orderId: Types.ObjectId) {
     return await orderRepository.getOrderDetail(orderId);
   }
+
+  async getOrders(userId: Types.ObjectId) {
+    return await orderRepository.getOrders(userId);
+  }
 }
 
 export default new OrderService();

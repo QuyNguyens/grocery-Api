@@ -39,6 +39,10 @@ class OrderRepository {
   getOrderDetail(orderId: Types.ObjectId) {
     return orderDetailModel.find({ orderId });
   }
+
+  getOrders(userId: Types.ObjectId) {
+    return orderModel.find({ userId });
+  }
 }
 
 export default new OrderRepository();
