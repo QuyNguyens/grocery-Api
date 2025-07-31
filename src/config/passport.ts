@@ -4,7 +4,6 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { Strategy as FacebookStrategy } from 'passport-facebook';
 import userModel from '../app/models/user.model';
 import env from './env';
-import { IUser } from '../types/user';
 
 // Google Strategy
 passport.use(
@@ -12,7 +11,7 @@ passport.use(
     {
       clientID: env.GOOGLE_CLIENT_ID!,
       clientSecret: env.GOOGLE_CLIENT_SECRET!,
-      callbackURL: '/api/auth/google/callback',
+      callbackURL: `${env.APP_URL}/api/auth/google/callback`,
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
@@ -54,7 +53,7 @@ passport.use(
     {
       clientID: env.FACEBOOK_CLIENT_ID!,
       clientSecret: env.FACEBOOK_CLIENT_SECRET!,
-      callbackURL: '/api/auth/facebook/callback',
+      callbackURL: `${env.APP_URL}/api/auth/google/callback`,
       profileFields: ['id', 'displayName', 'emails', 'photos'],
     },
     async (accessToken, refreshToken, profile, done) => {

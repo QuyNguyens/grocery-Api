@@ -13,7 +13,7 @@ const env_1 = __importDefault(require("./env"));
 passport_1.default.use(new passport_google_oauth20_1.Strategy({
     clientID: env_1.default.GOOGLE_CLIENT_ID,
     clientSecret: env_1.default.GOOGLE_CLIENT_SECRET,
-    callbackURL: '/api/auth/google/callback',
+    callbackURL: `${env_1.default.APP_URL}/api/auth/google/callback`,
 }, async (accessToken, refreshToken, profile, done) => {
     try {
         const existingUser = await user_model_1.default.findOne({
@@ -47,7 +47,7 @@ passport_1.default.use(new passport_google_oauth20_1.Strategy({
 passport_1.default.use(new passport_facebook_1.Strategy({
     clientID: env_1.default.FACEBOOK_CLIENT_ID,
     clientSecret: env_1.default.FACEBOOK_CLIENT_SECRET,
-    callbackURL: '/api/auth/facebook/callback',
+    callbackURL: `${env_1.default.APP_URL}/api/auth/google/callback`,
     profileFields: ['id', 'displayName', 'emails', 'photos'],
 }, async (accessToken, refreshToken, profile, done) => {
     try {
