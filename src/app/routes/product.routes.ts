@@ -11,5 +11,6 @@ router.get('/special', productController.getSpecialProducts);
 router.get('/top-deal', productController.getTopDealProducts);
 router.get('/best-selling', productController.getBestSellingProducts);
 router.post('/create', validateRequest(productSchema), productController.create);
+router.get('/filter', productController.filterProducts);
 
 export default router;

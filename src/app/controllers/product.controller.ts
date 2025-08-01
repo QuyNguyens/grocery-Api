@@ -32,7 +32,7 @@ class ProductController {
       });
     } catch (error) {}
   }
-  
+
   async getProductsByCategoryName(req: Request, res: Response) {
     try {
       const { name, page = 1, limit = 10 } = req.query;
@@ -109,6 +109,18 @@ class ProductController {
       });
     } catch (err) {
       error(res, 500, 'Lấy danh sách sản phẩm best selling thất bại');
+    }
+  }
+
+  async filterProducts(req: Request, res: Response) {
+    try {
+      const { keyword } = req.query;
+
+      const result = await productService.filterProducts(keyword?.toString() || '');
+
+      success(res, 200, 'Tìm thấy các sản phẩm liên quan', result);
+    } catch (err) {
+      error(res, 500, 'Lỗi khi tìm kiếm sản phẩm');
     }
   }
 }

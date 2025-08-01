@@ -26,6 +26,10 @@ class ProductService {
   async getProducts(page: number, limit: number) {
     return await productRepository.getProducts(page, limit);
   }
+  
+  async filterProducts(keyword: string) {
+    return await productRepository.filterProducts(keyword);
+  }
 }
 
 export default new ProductService();

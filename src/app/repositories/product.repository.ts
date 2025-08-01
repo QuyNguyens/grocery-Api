@@ -124,7 +124,6 @@ class ProductRepository {
           basePrice: '$product.basePrice',
           images: '$product.images',
           discount: '$discount',
-          // convert to just array of value strings
           attributeValueIds: {
             $map: {
               input: '$attributeValues',
@@ -133,6 +132,7 @@ class ProductRepository {
             },
           },
           inStock: '$quantity',
+          createdAt: '$product.createdAt',
         },
       },
       { $skip: skip },
@@ -198,6 +198,7 @@ class ProductRepository {
           images: '$product.images',
           rating: '$avgRating',
           totalRating: '$reviewCount',
+          createdAt: '$product.createdAt',
         },
       },
     ]);
@@ -269,6 +270,7 @@ class ProductRepository {
           categoryId: '$product.categoryId',
           basePrice: '$product.basePrice',
           images: '$product.images',
+          createdAt: '$product.createdAt',
         },
       },
     ]);
@@ -351,11 +353,53 @@ class ProductRepository {
           categoryType: productType?.name,
           categoryRefType: productType?.related,
           inStock: variant?.quantity,
+          createdAt: product.createdAt,
         };
       }),
     );
 
     return { result, totalProduct };
+  }
+
+  async filterProducts(keyword: string) {
+    const products = await productModel
+      .aggregate([
+        {
+          $lookup: {
+            from: 'categories',
+            localField: 'categoryId',
+            foreignField: '_id',
+            as: 'category',
+          },
+        },
+        {
+          $unwind: '$category',
+        },
+        {
+          $match: {
+            $or: [
+              { name: { $regex: keyword, $options: 'i' } },
+              { description: { $regex: keyword, $options: 'i' } },
+              { 'category.name': { $regex: keyword, $options: 'i' } },
+            ],
+          },
+        },
+        {
+          $project: {
+            _id: 1,
+            categoryId: 1,
+            name: 1,
+            description: 1,
+            basePrice: 1,
+            images: 1,
+            categoryType: '$category.name',
+            createdAt: 1,
+          },
+        },
+      ])
+      .sample(4);
+
+    return products;
   }
 }
 
