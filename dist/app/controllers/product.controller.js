@@ -92,5 +92,15 @@ class ProductController {
             (0, response_1.error)(res, 500, 'Lấy danh sách sản phẩm best selling thất bại');
         }
     }
+    async filterProducts(req, res) {
+        try {
+            const { keyword } = req.query;
+            const result = await product_service_1.default.filterProducts(keyword?.toString() || '');
+            (0, response_1.success)(res, 200, 'Tìm thấy các sản phẩm liên quan', result);
+        }
+        catch (err) {
+            (0, response_1.error)(res, 500, 'Lỗi khi tìm kiếm sản phẩm');
+        }
+    }
 }
 exports.default = new ProductController();
