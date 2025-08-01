@@ -1,6 +1,8 @@
+import { Types } from 'mongoose';
 import { IProductVariant } from '../productVariant';
 
 export interface UserRating {
+  userId: Types.ObjectId;
   rating: number;
   comment: string;
   createdAt?: Date;

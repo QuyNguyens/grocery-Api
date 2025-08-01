@@ -2,8 +2,13 @@ import reviewModel from '../models/review.model';
 import { ReviewInput } from '../validators/review.validator';
 
 class ReviewRepository {
-  create(data: ReviewInput) {
-    return reviewModel.create(data);
+  async create(data: ReviewInput) {
+    const existing = await reviewModel.findOne({ userId: data.userId, productId: data.productId });
+    if (existing) {
+      return null;
+    } else {
+      return reviewModel.create(data);
+    }
   }
 }
 

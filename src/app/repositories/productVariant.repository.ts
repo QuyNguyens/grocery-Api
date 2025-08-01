@@ -79,6 +79,7 @@ class ProductVariantRepository {
       { $unwind: '$user' },
       {
         $project: {
+          userId: '$user._id',
           rating: 1,
           comment: 1,
           createdAt: 1,

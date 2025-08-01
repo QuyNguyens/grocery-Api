@@ -10,7 +10,9 @@ const ReviewSchema = new Schema<IReviewDocument>(
     rating: Number,
     comment: String,
   },
-  { timestamps: true },
+  {
+    timestamps: { updatedAt: false, createdAt: true },
+  },
 );
 
 export default mongoose.model<IReviewDocument>('Review', ReviewSchema);
