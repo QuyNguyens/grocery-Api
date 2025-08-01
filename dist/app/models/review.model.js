@@ -39,5 +39,7 @@ const ReviewSchema = new mongoose_1.Schema({
     productId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Product' },
     rating: Number,
     comment: String,
-}, { timestamps: true });
+}, {
+    timestamps: { updatedAt: false, createdAt: true },
+});
 exports.default = mongoose_1.default.model('Review', ReviewSchema);
