@@ -9,22 +9,24 @@ import '../src/config/passport';
 
 const app: Application = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: 'https://grocery-ecru.vercel.app',
+    credentials: true,
+  }),
+);
 app.use(helmet());
 app.use(morgan('combined', { stream: { write: msg => logger.info(msg.trim()) } }));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Cấu hình routes
 app.use('/api', router);
 
-// Route mặc định
 app.get('/', (_req, res) => {
   res.json({ message: 'API is running' });
 });
 
-// Xử lý lỗi 404
 app.use((req, res) => {
   res.status(404).json({ message: 'Not Found' });
 });

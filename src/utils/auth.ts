@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
 import env from '../config/env';
 import { JwtPayload } from '../types/jwt';
+import { error } from './response';
 
 const JWT_SECRET = env.JWT_SECRET!;
 const JWT_EXPIRES_IN = env.JWT_EXPIRES_IN! || '15m';
@@ -19,14 +20,12 @@ export function signToken(payload: JwtPayload): string {
   return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
 }
 
-// ✅ Middleware xác thực token từ header Authorization
 export function verifyToken(req: Request, res: Response, next: NextFunction) {
   const authHeader = req.headers.authorization;
   const token = authHeader?.split(' ')[1];
 
   if (!token) {
-    // return res.error(401, 'No token provided');
-    return res.status(400).json({ message: 'error' });
+    return error(res, 401, 'Access token expired or invalid');
   }
 
   try {
@@ -34,8 +33,7 @@ export function verifyToken(req: Request, res: Response, next: NextFunction) {
     (req as any).user = decoded;
     next();
   } catch (err) {
-    return res.status(400).json({ message: 'error' });
-    // return res.error(401, 'Invalid token');
+    return error(res, 401, 'Access token expired or invalid');
   }
 }
 
@@ -43,7 +41,6 @@ export function verifyRefreshToken(token: string) {
   return jwt.verify(token, JWT_REFRESH_SECRET);
 }
 
-// ✅ Hàm verifyToken đơn giản cho WebSocket (không phải middleware)
 export function verifyTokenForSocket(token?: string): string | null {
   if (!token) return null;
   try {
