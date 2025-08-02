@@ -28,7 +28,7 @@ class UserService {
             const tokens = (0, auth_1.generateTokens)({ userId: user._id, role: user.role });
             const { _id, name, email, avatar, role, addresses } = user;
             return {
-                user: { _id, name, email, role, addresses },
+                user: { _id, name, email, avatar, role, addresses },
                 ...tokens,
             };
         };
