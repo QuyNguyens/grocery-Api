@@ -16,6 +16,7 @@ import { ObjectValidator } from '../helpers/objectIdValidator';
 import { ObjectIdConvert } from '../helpers/convert/ObjectIdConvert';
 import userController from '../controllers/user.controller';
 import env from '../../config/env';
+import { verifyToken } from '../../utils/auth';
 
 const router = express.Router();
 
@@ -30,7 +31,7 @@ function createVNPayInstance() {
   });
 }
 
-router.post('/create-qr', async (req: Request, res: Response) => {
+router.post('/create-qr', verifyToken, async (req: Request, res: Response) => {
   const { userId, totalPrice, items, address } = req.body;
   if (!ObjectValidator(userId)) {
     return error(res, 400, 'invalid userId');

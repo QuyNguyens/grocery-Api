@@ -11,5 +11,6 @@ router.post('/signup', validateRequest(signupSchema), userController.signup);
 router.post('/login', validateRequest(loginSchema), userController.login);
 router.post('/refresh-token', userController.refresh);
 router.post('/update', verifyToken, upload.single('avatar'), userController.update);
+router.post('/logout', userController.logout);
 
 export default router;

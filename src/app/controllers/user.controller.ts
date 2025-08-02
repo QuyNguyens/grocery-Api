@@ -13,13 +13,8 @@ class UserController {
     try {
       const data: SignupInput = req.body;
       const { user, accessToken, refreshToken } = await userService.signup(data);
-      res.cookie(env.REFRESH_TOKEN_COOKIE_NAME, refreshToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'strict',
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-      });
-      success(res, 201, 'Đăng ký thành công', { user, accessToken });
+
+      success(res, 201, 'Đăng ký thành công', { user, accessToken, refreshToken });
     } catch (err) {
       error(res, 400, (err as Error).message);
     }
@@ -29,13 +24,7 @@ class UserController {
     try {
       const data: LoginInput = req.body;
       const { user, accessToken, refreshToken } = await userService.login(data);
-      res.cookie(env.REFRESH_TOKEN_COOKIE_NAME, refreshToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'none',
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-      });
-      success(res, 200, 'Đăng nhập thành công', { user, accessToken });
+      success(res, 200, 'Đăng nhập thành công', { user, accessToken, refreshToken });
     } catch (err) {
       error(res, 400, (err as Error).message);
     }
@@ -43,18 +32,12 @@ class UserController {
 
   refresh = async (req: Request, res: Response) => {
     try {
-      const refreshToken = req.cookies?.refresh_token;
-      if (!refreshToken) return error(res, 401, 'Thiếu refresh token');
+      const { rfToken } = req.body;
+      if (!rfToken) return error(res, 401, 'Thiếu refresh token');
 
-      const tokens = await userService.refreshToken(refreshToken);
-      res.cookie('refresh_token', tokens.refreshToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'strict',
-        path: '/',
-      });
+      const { accessToken, refreshToken } = await userService.refreshToken(rfToken);
 
-      success(res, 200, 'Làm mới token thành công', tokens.accessToken);
+      success(res, 200, 'Làm mới token thành công', { accessToken, refreshToken });
     } catch (err) {
       error(res, 403, (err as Error).message);
     }
@@ -89,6 +72,17 @@ class UserController {
       return success(res, 200, 'Cập nhật user thành công', user);
     } catch (err) {
       return error(res, 500, 'Server error');
+    }
+  }
+
+  async logout(req: Request, res: Response) {
+    try {
+      const { rfToken } = req.body;
+      if (!rfToken) return error(res, 401, 'Thiếu refresh token');
+      await userService.logout(rfToken);
+      success(res, 204, 'Đăng xuất thành công');
+    } catch (err) {
+      error(res, 500, 'Lỗi khi đăng xuất');
     }
   }
 }

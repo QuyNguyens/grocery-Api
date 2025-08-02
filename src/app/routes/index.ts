@@ -9,6 +9,7 @@ import productVariantRouter from './productVariant.routes';
 import reviewRouter from './review.routes';
 import cartRouter from './cart.routes';
 import vnpayRouter from './vnpay.routes';
+import { verifyToken } from '../../utils/auth';
 
 const router = Router();
 
@@ -17,10 +18,10 @@ router.use('/auth', authRouter);
 router.use('/orders', orderRoute);
 router.use('/categories', categoryRouter);
 router.use('/products', productRouter);
-router.use('/product-attribute', productAttributeRouter);
+router.use('/product-attribute', verifyToken, productAttributeRouter);
 router.use('/product-variant', productVariantRouter);
-router.use('/review', reviewRouter);
-router.use('/cart', cartRouter);
+router.use('/review', verifyToken, reviewRouter);
+router.use('/cart', verifyToken, cartRouter);
 router.use('/vnpay', vnpayRouter);
 
 export default router;

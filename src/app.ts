@@ -8,13 +8,10 @@ import cookieParser from 'cookie-parser';
 import '../src/config/passport';
 
 const app: Application = express();
-
-app.set('trust proxy', 1);
-
+//https://grocery-ecru.vercel.app
 app.use(
   cors({
-    origin: 'https://grocery-ecru.vercel.app',
-    credentials: true,
+    origin: 'http://localhost:4000',
   }),
 );
 app.use(helmet());

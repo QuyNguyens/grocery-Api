@@ -1,3 +1,5 @@
+import { Ref } from './common';
+
 // src/types/user.ts
 export interface Address {
   fullName: string;
@@ -25,4 +27,10 @@ export interface IUser {
   addresses?: Address[];
   createdAt?: Date;
   updatedAt?: Date;
+}
+
+export interface IRefreshToken {
+  userId: Ref<IUser>;
+  token: string;
+  expiresAt: Date;
 }
