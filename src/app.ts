@@ -9,6 +9,8 @@ import '../src/config/passport';
 
 const app: Application = express();
 
+app.set('trust proxy', 1);
+
 app.use(
   cors({
     origin: 'https://grocery-ecru.vercel.app',
