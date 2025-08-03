@@ -6,12 +6,13 @@ import logger from './utils/logger';
 import router from './app/routes';
 import cookieParser from 'cookie-parser';
 import '../src/config/passport';
+import env from './config/env';
 
 const app: Application = express();
-//https://grocery-ecru.vercel.app
+
 app.use(
   cors({
-    origin: 'http://localhost:4000',
+    origin: env.SCHEMA_FE_URL,
   }),
 );
 app.use(helmet());

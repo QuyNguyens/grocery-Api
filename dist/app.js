@@ -11,10 +11,10 @@ const logger_1 = __importDefault(require("./utils/logger"));
 const routes_1 = __importDefault(require("./app/routes"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 require("../src/config/passport");
+const env_1 = __importDefault(require("./config/env"));
 const app = (0, express_1.default)();
-//https://grocery-ecru.vercel.app
 app.use((0, cors_1.default)({
-    origin: 'http://localhost:4000',
+    origin: env_1.default.SCHEMA_FE_URL,
 }));
 app.use((0, helmet_1.default)());
 app.use((0, morgan_1.default)('combined', { stream: { write: msg => logger_1.default.info(msg.trim()) } }));
