@@ -15,4 +15,5 @@ router.post('/signup', (0, validateRequest_1.validateRequest)(auth_validator_1.s
 router.post('/login', (0, validateRequest_1.validateRequest)(auth_validator_1.loginSchema), user_controller_1.default.login);
 router.post('/refresh-token', user_controller_1.default.refresh);
 router.post('/update', auth_1.verifyToken, upload.single('avatar'), user_controller_1.default.update);
+router.post('/logout', user_controller_1.default.logout);
 exports.default = router;

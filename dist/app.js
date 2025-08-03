@@ -12,10 +12,9 @@ const routes_1 = __importDefault(require("./app/routes"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 require("../src/config/passport");
 const app = (0, express_1.default)();
-app.set('trust proxy', 1);
+//https://grocery-ecru.vercel.app
 app.use((0, cors_1.default)({
-    origin: 'https://grocery-ecru.vercel.app',
-    credentials: true,
+    origin: 'http://localhost:4000',
 }));
 app.use((0, helmet_1.default)());
 app.use((0, morgan_1.default)('combined', { stream: { write: msg => logger_1.default.info(msg.trim()) } }));

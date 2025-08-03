@@ -3,7 +3,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const env_1 = __importDefault(require("../../config/env"));
 const response_1 = require("../../utils/response");
 const user_service_1 = __importDefault(require("../services/user.service"));
 const user_model_1 = __importDefault(require("../models/user.model"));
@@ -14,13 +13,7 @@ class UserController {
             try {
                 const data = req.body;
                 const { user, accessToken, refreshToken } = await user_service_1.default.signup(data);
-                res.cookie(env_1.default.REFRESH_TOKEN_COOKIE_NAME, refreshToken, {
-                    httpOnly: true,
-                    secure: true,
-                    sameSite: 'strict',
-                    maxAge: 7 * 24 * 60 * 60 * 1000,
-                });
-                (0, response_1.success)(res, 201, 'Đăng ký thành công', { user, accessToken });
+                (0, response_1.success)(res, 201, 'Đăng ký thành công', { user, accessToken, refreshToken });
             }
             catch (err) {
                 (0, response_1.error)(res, 400, err.message);
@@ -30,13 +23,7 @@ class UserController {
             try {
                 const data = req.body;
                 const { user, accessToken, refreshToken } = await user_service_1.default.login(data);
-                res.cookie(env_1.default.REFRESH_TOKEN_COOKIE_NAME, refreshToken, {
-                    httpOnly: true,
-                    secure: true,
-                    sameSite: 'none',
-                    maxAge: 7 * 24 * 60 * 60 * 1000,
-                });
-                (0, response_1.success)(res, 200, 'Đăng nhập thành công', { user, accessToken });
+                (0, response_1.success)(res, 200, 'Đăng nhập thành công', { user, accessToken, refreshToken });
             }
             catch (err) {
                 (0, response_1.error)(res, 400, err.message);
@@ -44,17 +31,11 @@ class UserController {
         };
         this.refresh = async (req, res) => {
             try {
-                const refreshToken = req.cookies?.refresh_token;
-                if (!refreshToken)
+                const { rfToken } = req.body;
+                if (!rfToken)
                     return (0, response_1.error)(res, 401, 'Thiếu refresh token');
-                const tokens = await user_service_1.default.refreshToken(refreshToken);
-                res.cookie('refresh_token', tokens.refreshToken, {
-                    httpOnly: true,
-                    secure: true,
-                    sameSite: 'strict',
-                    path: '/',
-                });
-                (0, response_1.success)(res, 200, 'Làm mới token thành công', tokens.accessToken);
+                const { accessToken, refreshToken } = await user_service_1.default.refreshToken(rfToken);
+                (0, response_1.success)(res, 200, 'Làm mới token thành công', { accessToken, refreshToken });
             }
             catch (err) {
                 (0, response_1.error)(res, 403, err.message);
@@ -91,6 +72,18 @@ class UserController {
         }
         catch (err) {
             return (0, response_1.error)(res, 500, 'Server error');
+        }
+    }
+    async logout(req, res) {
+        try {
+            const { rfToken } = req.body;
+            if (!rfToken)
+                return (0, response_1.error)(res, 401, 'Thiếu refresh token');
+            await user_service_1.default.logout(rfToken);
+            (0, response_1.success)(res, 204, 'Đăng xuất thành công');
+        }
+        catch (err) {
+            (0, response_1.error)(res, 500, 'Lỗi khi đăng xuất');
         }
     }
 }

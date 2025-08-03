@@ -11,6 +11,7 @@ const objectIdValidator_1 = require("../helpers/objectIdValidator");
 const ObjectIdConvert_1 = require("../helpers/convert/ObjectIdConvert");
 const user_controller_1 = __importDefault(require("../controllers/user.controller"));
 const env_1 = __importDefault(require("../../config/env"));
+const auth_1 = require("../../utils/auth");
 const router = express_1.default.Router();
 function createVNPayInstance() {
     return new vnpay_1.VNPay({
@@ -22,7 +23,7 @@ function createVNPayInstance() {
         loggerFn: vnpay_1.ignoreLogger,
     });
 }
-router.post('/create-qr', async (req, res) => {
+router.post('/create-qr', auth_1.verifyToken, async (req, res) => {
     const { userId, totalPrice, items, address } = req.body;
     if (!(0, objectIdValidator_1.ObjectValidator)(userId)) {
         return (0, response_1.error)(res, 400, 'invalid userId');
