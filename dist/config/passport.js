@@ -9,22 +9,23 @@ const passport_google_oauth20_1 = require("passport-google-oauth20");
 const passport_facebook_1 = require("passport-facebook");
 const user_model_1 = __importDefault(require("../app/models/user.model"));
 const env_1 = __importDefault(require("./env"));
+const mongoose_1 = require("mongoose");
 // Google Strategy
 passport_1.default.use(new passport_google_oauth20_1.Strategy({
     clientID: env_1.default.GOOGLE_CLIENT_ID,
     clientSecret: env_1.default.GOOGLE_CLIENT_SECRET,
     callbackURL: `${env_1.default.APP_URL}/api/auth/google/callback`,
-}, async (accessToken, refreshToken, profile, done) => {
+}, async (_accessToken, _refreshToken, profile, done) => {
     try {
         const existingUser = await user_model_1.default.findOne({
             providerId: profile.id,
             provider: 'google',
         });
+        let id = new mongoose_1.Types.ObjectId(existingUser?.id);
         if (existingUser)
             return done(null, {
                 ...existingUser.toObject(),
-                accessToken,
-                refreshToken,
+                id,
             });
         const newUser = await user_model_1.default.create({
             name: profile.displayName,
@@ -35,8 +36,7 @@ passport_1.default.use(new passport_google_oauth20_1.Strategy({
         });
         return done(null, {
             ...newUser.toObject(),
-            accessToken,
-            refreshToken,
+            id,
         });
     }
     catch (err) {
