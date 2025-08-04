@@ -4,10 +4,11 @@ import passport from 'passport';
 import session from 'express-session';
 import { IUser } from '../../types/user';
 import env from '../../config/env';
+import { Types } from 'mongoose';
+import { generateTokens } from '../../utils/auth';
 interface AuthenticatedRequest extends Request {
   user: IUser & {
-    accessToken: string;
-    refreshToken: string;
+    id: Types.ObjectId;
   };
 }
 
@@ -23,17 +24,12 @@ authRouter.get(
   '/google/callback',
   passport.authenticate('google', { failureRedirect: '/login' }),
   (req, res) => {
-    const { accessToken, refreshToken, ...user } = (req as AuthenticatedRequest).user;
+    const { id, ...user } = (req as AuthenticatedRequest).user;
 
-    res.cookie(env.REFRESH_TOKEN_COOKIE_NAME, refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+    const tokens = generateTokens({ userId: id, role: user.role });
 
     res.redirect(
-      `${env.SCHEMA_FE_URL}/auth/callback?token=${accessToken}&user=${encodeURIComponent(JSON.stringify(user))}`,
+      `${env.SCHEMA_FE_URL}/auth/callback?access=${tokens.accessToken}&refresh=${tokens.refreshToken}&user=${encodeURIComponent(JSON.stringify(user))}`,
     );
   },
 );
@@ -44,16 +40,12 @@ authRouter.get(
   '/facebook/callback',
   passport.authenticate('facebook', { failureRedirect: '/login' }),
   (req, res) => {
-    const { accessToken, refreshToken, ...user } = (req as AuthenticatedRequest).user;
+    const { id, ...user } = (req as AuthenticatedRequest).user;
 
-    res.cookie(env.REFRESH_TOKEN_COOKIE_NAME, refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+    const tokens = generateTokens({ userId: id, role: user.role });
+
     res.redirect(
-      `${env.SCHEMA_FE_URL}/auth/callback?token=${accessToken}&user=${encodeURIComponent(JSON.stringify(user))}`,
+      `${env.SCHEMA_FE_URL}/auth/callback?access=${tokens.accessToken}&refresh=${tokens.refreshToken}&user=${encodeURIComponent(JSON.stringify(user))}`,
     );
   },
 );

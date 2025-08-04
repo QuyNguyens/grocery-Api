@@ -4,6 +4,7 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { Strategy as FacebookStrategy } from 'passport-facebook';
 import userModel from '../app/models/user.model';
 import env from './env';
+import { Types } from 'mongoose';
 
 // Google Strategy
 passport.use(
@@ -13,18 +14,17 @@ passport.use(
       clientSecret: env.GOOGLE_CLIENT_SECRET!,
       callbackURL: `${env.APP_URL}/api/auth/google/callback`,
     },
-    async (accessToken, refreshToken, profile, done) => {
+    async (_accessToken, _refreshToken, profile, done) => {
       try {
         const existingUser = await userModel.findOne({
           providerId: profile.id,
           provider: 'google',
         });
-
+        let id = new Types.ObjectId(existingUser?.id);
         if (existingUser)
           return done(null, {
             ...existingUser.toObject(),
-            accessToken,
-            refreshToken,
+            id,
           });
 
         const newUser = await userModel.create({
@@ -37,8 +37,7 @@ passport.use(
 
         return done(null, {
           ...newUser.toObject(),
-          accessToken,
-          refreshToken,
+          id,
         });
       } catch (err) {
         return done(err);
