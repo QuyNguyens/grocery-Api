@@ -15,7 +15,7 @@ async function startServer() {
     await connectToDatabase();
 
     // Khởi động RabbitMQ Consumers
-    await initRabbitMQConsumers();
+    // await initRabbitMQConsumers();
 
     // Start HTTP server
     const server = app.listen(PORT, () => {

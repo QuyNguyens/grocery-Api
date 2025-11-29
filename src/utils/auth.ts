@@ -4,7 +4,8 @@ import env from '../config/env';
 import { JwtPayload } from '../types/jwt';
 import { error } from './response';
 
-const JWT_SECRET = env.JWT_SECRET!;
+const JWT_SECRET = env.JWT_SECRET ?? (() => { throw new Error('JWT_SECRET is missing'); })();
+
 const JWT_EXPIRES_IN = env.JWT_EXPIRES_IN! || '15m';
 const JWT_REFRESH_SECRET = env.JWT_REFRESH_SECRET || 'your_refresh_secret';
 const JWT_REFRESH_EXPIRES_IN = env.JWT_REFRESH_EXPIRES_IN || '7d';
@@ -14,7 +15,7 @@ export function generateTokens(payload: JwtPayload) {
   const refreshToken = jwt.sign(payload, JWT_REFRESH_SECRET, { expiresIn: JWT_REFRESH_EXPIRES_IN });
 
   return { accessToken, refreshToken };
-}
+} 
 
 export function signToken(payload: JwtPayload): string {
   return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });

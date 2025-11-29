@@ -7,7 +7,7 @@ class UserRepository {
     return userModel.create(data);
   };
 
-  findUserByEmail(email: string) {
+  findUserByEmail(email: string) {  
     return userModel.findOne({ email });
   }
 
